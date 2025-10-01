@@ -46,6 +46,9 @@
             @click="loadTabData">
             tasks
           </v-tab>
+          <v-tab value="fgac" @click="loadTabData">
+            FGAC
+          </v-tab>
         </v-tabs>
         <v-card style="max-height: 80vh; overflow: auto">
           <v-tabs-window v-model="tab">
@@ -137,6 +140,18 @@
                 <div class="text-subtitle-1 mt-2">Loading table information...</div>
               </div>
             </v-tabs-window-item>
+            <v-tabs-window-item value="fgac">
+              <FgacManager
+                v-if="loaded && tableId"
+                :warehouse-id="warehouseId"
+                :table-id="tableId"
+                :namespace-id="namespaceId"
+                :table-name="tableName" />
+              <div v-else class="text-center pa-8">
+                <v-progress-circular color="info" indeterminate :size="48"></v-progress-circular>
+                <div class="text-subtitle-1 mt-2">Loading FGAC configuration...</div>
+              </div>
+            </v-tabs-window-item>
           </v-tabs-window>
         </v-card>
       </v-col>
@@ -153,6 +168,7 @@ import { onMounted, reactive, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useFunctions } from '../../plugins/functions';
 import TaskManager from '../../components/TaskManager.vue';
+import FgacManager from '../../components/FgacManager.vue';
 import SearchTabular from '../../components/SearchTabular.vue';
 import { LoadTableResultReadable } from '../../gen/iceberg/types.gen';
 import { TableAction, TableAssignment } from '../../gen/management/types.gen';
