@@ -284,6 +284,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
+import { useUserStore } from '@/stores/user';
 
 // Props
 interface Props {
@@ -420,8 +421,17 @@ async function loadFgacData() {
     // Construct the path: namespace.table
     const tableIdentifier = `${props.namespaceId}.${props.tableName}`;
     
+    // Get authentication token
+    const userStore = useUserStore();
+    const token = userStore.user.access_token;
+    
     const response = await fetch(
-      `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`
+      `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
     );
     
     if (!response.ok) {
