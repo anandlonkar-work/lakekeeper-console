@@ -21,6 +21,7 @@ declare module 'vue' {
     DialogDelete: typeof import('./components/DialogDelete.vue')['default']
     DialogDeleteConfirm: typeof import('./components/dialogDeleteConfirm.vue')['default']
     EULA: typeof import('./components/EULA.vue')['default']
+    FgacManager: typeof import('./components/FgacManager.vue')['default']
     Home: typeof import('./components/Home.vue')['default']
     NavigationBar: typeof import('./components/NavigationBar.vue')['default']
     PermissionManager: typeof import('./components/PermissionManager.vue')['default']
