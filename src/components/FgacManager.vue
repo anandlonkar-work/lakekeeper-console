@@ -8,11 +8,11 @@
             <v-icon class="mr-2">mdi-shield-lock</v-icon>
             Fine-Grained Access Control
           </v-card-title>
-          <v-card-subtitle v-if="fgacData?.summary">
-            {{ fgacData.summary.total_column_permissions }} column permissions, 
-            {{ fgacData.summary.total_row_policies }} row policies
-            <span v-if="fgacData.summary.last_modified_at">
-              · Last modified: {{ formatTimestamp(fgacData.summary.last_modified_at) }}
+          <v-card-subtitle v-if="fgacData">
+            {{ fgacData.column_permissions?.length || 0 }} column permissions, 
+            {{ fgacData.row_policies?.length || 0 }} row policies
+            <span v-if="fgacData.table_info">
+              · Table: {{ fgacData.table_info.namespace_name }}.{{ fgacData.table_info.table_name }}
             </span>
           </v-card-subtitle>
         </v-card>
@@ -296,38 +296,23 @@ interface Props {
 
 const props = defineProps<Props>();
 
-// Type definitions matching real API
+// Type definitions matching actual API response
 interface TableFgacConfiguration {
-  summary: {
-    warehouse_id: string;
-    namespace: string;
-    table_name: string;
-    total_column_permissions: number;
-    total_row_policies: number;
-    columns_with_permissions: string[];
-    affected_principals: string[];
-    last_modified_at: string;
-  };
   table_info: {
     warehouse_id: string;
-    namespace: string;
-    table_name: string;
     table_id: string;
-    location: string;
-    table_format: string;
+    warehouse_name: string;
+    namespace_name: string;
+    table_name: string;
   };
-  columns: Array<{
-    name: string;
-    type: string;
-    nullable: boolean;
-    comment: string | null;
-  }>;
+  available_columns: string[];
   column_permissions: Array<{
     column_permission_id: string;
     column_name: string;
     principal_type: 'user' | 'role' | 'group';
     principal_id: string;
-    permission_type: 'read' | 'write' | 'owner';
+    permission_type: 'mask' | 'deny' | 'allow';
+    masking_method: string | null;
     granted_by: string;
     granted_at: string;
     expires_at: string | null;
@@ -345,6 +330,7 @@ interface TableFgacConfiguration {
     granted_at: string;
     expires_at: string | null;
   }>;
+  available_principals: string[];
 }
 
 // State
@@ -386,7 +372,7 @@ const rowPolicyForm = ref({
 
 // Computed
 const availableColumns = computed(() => {
-  return fgacData.value?.columns.map(col => col.name) || [];
+  return fgacData.value?.available_columns || [];
 });
 
 // Table headers
