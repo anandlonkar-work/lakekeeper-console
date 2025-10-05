@@ -428,6 +428,12 @@ async function loadFgacData() {
     
     // Use the EXACT same pattern as loadTableCustomized in functions.ts
     const accessToken = userStore.user.access_token;
+    console.log('🔧 Access token available:', !!accessToken);
+    console.log('🔧 Access token length:', accessToken?.length || 0);
+    
+    if (!accessToken) {
+      throw new Error('No access token available. Please refresh and login again.');
+    }
     
     const url = `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`;
     console.log('🔧 Making API call to:', url);
@@ -436,7 +442,7 @@ async function loadFgacData() {
       method: 'GET',
       headers: {
         'content-type': 'application/json',
-        authorization: `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${accessToken}`,
       },
     });
     
