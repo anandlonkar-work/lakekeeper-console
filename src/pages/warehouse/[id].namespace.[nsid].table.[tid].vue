@@ -142,7 +142,7 @@
             </v-tabs-window-item>
             <v-tabs-window-item value="fgac">
               <FgacManager
-                v-if="loaded && tableId"
+                v-if="loaded && tableId && tableId.length > 0"
                 :warehouse-id="warehouseId"
                 :table-id="tableId"
                 :namespace-id="namespaceId"
@@ -234,6 +234,8 @@ async function init() {
   Object.assign(table, await functions.loadTableCustomized(warehouseId, namespaceId, tableName));
 
   tableId.value = table.metadata['table-uuid'];
+  console.log('🔍 DEBUG - tableId after loading:', tableId.value);
+  console.log('🔍 DEBUG - table.metadata:', table.metadata);
 
   // Only proceed with permission checks if we have a valid table ID
   if (!tableId.value) {
@@ -266,6 +268,8 @@ async function init() {
     }
   }
   loaded.value = true;
+  console.log('🔍 DEBUG - After init: loaded =', loaded.value, ', tableId =', tableId.value);
+  console.log('🔍 DEBUG - Conditional check (loaded && tableId):', loaded.value && tableId.value);
 
   // Process snapshot history - sort by timestamp descending (newest first)
   snapshotHistory.splice(0, snapshotHistory.length);
