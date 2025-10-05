@@ -284,7 +284,6 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
-import { useFunctions } from '@/plugins/functions';
 import { useUserStore } from '@/stores/user';
 
 // Props
@@ -411,8 +410,7 @@ const rowPolicyHeaders = [
   { title: 'Actions', key: 'actions', sortable: false, width: '100px' },
 ];
 
-// Get functions plugin and user store - same pattern as other working components  
-const functions = useFunctions();
+// Get user store for authentication - same pattern as other working components  
 const userStore = useUserStore();
 
 // Methods
