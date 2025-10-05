@@ -159,7 +159,10 @@
               :items="availableColumns"
               label="Column"
               :rules="[v => !!v || 'Column is required']"
-              :disabled="editingColumnPermission !== null"></v-select>
+              :disabled="editingColumnPermission !== null"
+              item-title="text"
+              item-value="value"
+              clearable></v-select>
             
             <v-select
               v-model="columnPermissionForm.principal_type"
@@ -383,8 +386,15 @@ const availableColumns = computed(() => {
     console.error('🔍 DEBUG - available_columns is not an array:', typeof rawColumns, rawColumns);
     return [];
   }
-  console.log('🔍 DEBUG - columns after processing:', rawColumns);
-  return rawColumns;
+  
+  // Convert string array to objects for v-select
+  const columnOptions = rawColumns.map(column => ({
+    text: column,
+    value: column
+  }));
+  
+  console.log('🔍 DEBUG - columns after processing:', columnOptions);
+  return columnOptions;
 });
 
 // Table headers
