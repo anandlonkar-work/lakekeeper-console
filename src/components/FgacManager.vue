@@ -400,25 +400,30 @@ const rowPolicyHeaders = [
 
 // Methods
 async function loadFgacData() {
+  console.log('🔧 loadFgacData called');
   loading.value = true;
   error.value = null;
   
   try {
     // Construct the path: namespace.table
     const tableIdentifier = `${props.namespaceId}.${props.tableName}`;
+    console.log('🔧 tableIdentifier:', tableIdentifier);
     
     // Get authentication token
     const userStore = useUserStore();
     const token = userStore.user.access_token;
+    console.log('🔧 token exists:', !!token);
     
-    const response = await fetch(
-      `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+    const url = `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`;
+    console.log('🔧 Making API call to:', url);
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`
       }
-    );
+    });
+    
+    console.log('🔧 API response status:', response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -610,6 +615,12 @@ async function confirmDelete() {
 
 // Lifecycle
 onMounted(() => {
+  console.log('🔧 FgacManager mounted with props:', {
+    warehouseId: props.warehouseId,
+    tableId: props.tableId,
+    namespaceId: props.namespaceId,
+    tableName: props.tableName
+  });
   loadFgacData();
 });
 </script>

@@ -16,6 +16,10 @@ import { createApp } from 'vue';
 
 const app = createApp(App);
 
+// Enable Vue DevTools in production for debugging
+// @ts-ignore
+app.config.devtools = true;
+
 registerPlugins(app);
 
 app.use(auth);
