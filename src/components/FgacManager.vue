@@ -374,9 +374,17 @@ const rowPolicyForm = ref({
 const availableColumns = computed(() => {
   console.log('🔍 DEBUG - fgacData.value:', fgacData.value);
   console.log('🔍 DEBUG - available_columns raw:', fgacData.value?.available_columns);
-  const columns = fgacData.value?.available_columns || [];
-  console.log('🔍 DEBUG - columns after fallback:', columns);
-  return columns;
+  const rawColumns = fgacData.value?.available_columns;
+  if (!rawColumns) {
+    console.log('🔍 DEBUG - No columns data, returning empty array');
+    return [];
+  }
+  if (!Array.isArray(rawColumns)) {
+    console.error('🔍 DEBUG - available_columns is not an array:', typeof rawColumns, rawColumns);
+    return [];
+  }
+  console.log('🔍 DEBUG - columns after processing:', rawColumns);
+  return rawColumns;
 });
 
 // Table headers
@@ -466,6 +474,10 @@ function getPolicyTypeColor(type: string): string {
 
 // Column Permission Methods
 function openAddColumnPermissionDialog() {
+  console.log('🔍 DEBUG - openAddColumnPermissionDialog called');
+  console.log('🔍 DEBUG - fgacData.value at dialog open:', fgacData.value);
+  console.log('🔍 DEBUG - availableColumns at dialog open:', availableColumns.value);
+  
   editingColumnPermission.value = null;
   columnPermissionForm.value = {
     column_name: '',
