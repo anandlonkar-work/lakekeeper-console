@@ -372,7 +372,11 @@ const rowPolicyForm = ref({
 
 // Computed
 const availableColumns = computed(() => {
-  return fgacData.value?.available_columns || [];
+  console.log('🔍 DEBUG - fgacData.value:', fgacData.value);
+  console.log('🔍 DEBUG - available_columns raw:', fgacData.value?.available_columns);
+  const columns = fgacData.value?.available_columns || [];
+  console.log('🔍 DEBUG - columns after fallback:', columns);
+  return columns;
 });
 
 // Table headers
@@ -430,7 +434,10 @@ async function loadFgacData() {
       throw new Error(`Failed to load FGAC data: ${response.statusText}. ${errorText}`);
     }
     
-    fgacData.value = await response.json();
+    const responseData = await response.json();
+    console.log('🔧 Raw API response data:', responseData);
+    fgacData.value = responseData;
+    console.log('🔧 Set fgacData.value to:', fgacData.value);
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Unknown error loading FGAC data';
     console.error('Error loading FGAC data:', e);
