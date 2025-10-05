@@ -421,10 +421,29 @@ async function loadFgacData() {
     const tableIdentifier = `${props.namespaceId}.${props.tableName}`;
     console.log('🔧 tableIdentifier:', tableIdentifier);
     
-    // Get authentication token
-    const userStore = useUserStore();
-    const token = userStore.user.access_token;
-    console.log('🔧 token exists:', !!token);
+    // Get authentication token with fallback
+    let token = null;
+    try {
+      const userStore = useUserStore();
+      console.log('🔧 userStore:', userStore);
+      console.log('🔧 userStore.user:', userStore?.user);
+      token = userStore?.user?.access_token;
+      console.log('🔧 token from store:', !!token);
+      
+      // Fallback to localStorage if store fails
+      if (!token) {
+        console.log('🔧 Store token failed, trying localStorage...');
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+        token = userData?.user?.access_token;
+        console.log('🔧 token from localStorage:', !!token);
+      }
+    } catch (error) {
+      console.error('🔧 Error accessing user store:', error);
+      // Fallback to localStorage
+      const userData = JSON.parse(localStorage.getItem('user') || '{}');
+      token = userData?.user?.access_token;
+      console.log('🔧 token from localStorage fallback:', !!token);
+    }
     
     const url = `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`;
     console.log('🔧 Making API call to:', url);
