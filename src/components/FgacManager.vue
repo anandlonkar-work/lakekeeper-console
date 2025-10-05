@@ -284,6 +284,7 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from 'vue';
+import { useFunctions } from '@/plugins/functions';
 import { useUserStore } from '@/stores/user';
 
 // Props
@@ -410,6 +411,10 @@ const rowPolicyHeaders = [
   { title: 'Actions', key: 'actions', sortable: false, width: '100px' },
 ];
 
+// Get functions plugin and user store - same pattern as other working components  
+const functions = useFunctions();
+const userStore = useUserStore();
+
 // Methods
 async function loadFgacData() {
   console.log('🔧 loadFgacData called');
@@ -421,43 +426,18 @@ async function loadFgacData() {
     const tableIdentifier = `${props.namespaceId}.${props.tableName}`;
     console.log('🔧 tableIdentifier:', tableIdentifier);
     
-    // Get authentication token - DIRECT localStorage access as workaround
-    let token = null;
-    console.log('🔧 Getting token directly from localStorage...');
-    try {
-      const userData = JSON.parse(localStorage.getItem('user') || '{}');
-      token = userData?.user?.access_token;
-      console.log('🔧 localStorage token exists:', !!token);
-      console.log('🔧 localStorage token length:', token?.length || 0);
-      
-      if (!token) {
-        throw new Error('No token found in localStorage');
-      }
-      
-      // Validate token is not expired
-      const tokenParts = token.split('.');
-      if (tokenParts.length === 3) {
-        const payload = JSON.parse(atob(tokenParts[1]));
-        const isExpired = payload.exp * 1000 < Date.now();
-        console.log('🔧 Token expires:', new Date(payload.exp * 1000));
-        console.log('🔧 Token is expired:', isExpired);
-        if (isExpired) {
-          throw new Error('Token is expired. Please refresh and login again.');
-        }
-      }
-    } catch (error) {
-      console.error('🔧 Error getting token from localStorage:', error);
-      error.value = error instanceof Error ? error.message : 'Authentication token not found. Please refresh and login again.';
-      return;
-    }
+    // Use the EXACT same pattern as loadTableCustomized in functions.ts
+    const accessToken = userStore.user.access_token;
     
     const url = `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`;
     console.log('🔧 Making API call to:', url);
     
     const response = await fetch(url, {
+      method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`
-      }
+        'content-type': 'application/json',
+        authorization: `Bearer ${accessToken}`,
+      },
     });
     
     console.log('🔧 API response status:', response.status);
