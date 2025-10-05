@@ -421,28 +421,34 @@ async function loadFgacData() {
     const tableIdentifier = `${props.namespaceId}.${props.tableName}`;
     console.log('🔧 tableIdentifier:', tableIdentifier);
     
-    // Get authentication token with fallback
+    // Get authentication token - DIRECT localStorage access as workaround
     let token = null;
+    console.log('🔧 Getting token directly from localStorage...');
     try {
-      const userStore = useUserStore();
-      console.log('🔧 userStore:', userStore);
-      console.log('🔧 userStore.user:', userStore?.user);
-      token = userStore?.user?.access_token;
-      console.log('🔧 token from store:', !!token);
-      
-      // Fallback to localStorage if store fails
-      if (!token) {
-        console.log('🔧 Store token failed, trying localStorage...');
-        const userData = JSON.parse(localStorage.getItem('user') || '{}');
-        token = userData?.user?.access_token;
-        console.log('🔧 token from localStorage:', !!token);
-      }
-    } catch (error) {
-      console.error('🔧 Error accessing user store:', error);
-      // Fallback to localStorage
       const userData = JSON.parse(localStorage.getItem('user') || '{}');
       token = userData?.user?.access_token;
-      console.log('🔧 token from localStorage fallback:', !!token);
+      console.log('🔧 localStorage token exists:', !!token);
+      console.log('🔧 localStorage token length:', token?.length || 0);
+      
+      if (!token) {
+        throw new Error('No token found in localStorage');
+      }
+      
+      // Validate token is not expired
+      const tokenParts = token.split('.');
+      if (tokenParts.length === 3) {
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const isExpired = payload.exp * 1000 < Date.now();
+        console.log('🔧 Token expires:', new Date(payload.exp * 1000));
+        console.log('🔧 Token is expired:', isExpired);
+        if (isExpired) {
+          throw new Error('Token is expired. Please refresh and login again.');
+        }
+      }
+    } catch (error) {
+      console.error('🔧 Error getting token from localStorage:', error);
+      error.value = error instanceof Error ? error.message : 'Authentication token not found. Please refresh and login again.';
+      return;
     }
     
     const url = `/ui/api/fgac/${props.warehouseId}/${encodeURIComponent(tableIdentifier)}`;
