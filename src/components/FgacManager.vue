@@ -417,7 +417,7 @@ const userStore = useUserStore();
 
 // Methods
 async function loadFgacData() {
-  console.log('🔧 loadFgacData called');
+  console.log('🔧 loadFgacData called - VERSION 2024-10-05-FIXED');
   loading.value = true;
   error.value = null;
   
