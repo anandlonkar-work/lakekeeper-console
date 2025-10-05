@@ -1,6 +1,7 @@
 // Utilities
 import { User } from '@/common/interfaces';
 import { defineStore } from 'pinia';
+import { ref, reactive } from 'vue';
 
 export const useUserStore = defineStore(
   'user',
