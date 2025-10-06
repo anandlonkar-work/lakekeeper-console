@@ -450,7 +450,7 @@ const userStore = useUserStore();
 
 // Methods
 async function loadFgacData() {
-  console.log('🔧 loadFgacData called - VERSION 2024-10-05-FIXED');
+  console.log('🔧 loadFgacData called - VERSION 2024-10-05-20:15:00-ENHANCED');
   loading.value = true;
   error.value = null;
   
