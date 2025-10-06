@@ -162,7 +162,9 @@
               :disabled="editingColumnPermission !== null"
               item-title="text"
               item-value="value"
-              clearable></v-select>
+              clearable
+              variant="outlined"
+              @update:modelValue="(val) => console.log('🔧 Column selected:', val)"></v-select>
             
             <v-select
               v-model="columnPermissionForm.principal_type"
@@ -394,6 +396,8 @@ const availableColumns = computed(() => {
   }));
   
   console.log('🔍 DEBUG - columns after processing:', columnOptions);
+  console.log('🔍 DEBUG - sample column object:', columnOptions[0]);
+  console.log('🔍 DEBUG - total columns:', columnOptions.length);
   return columnOptions;
 });
 
