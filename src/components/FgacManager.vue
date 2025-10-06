@@ -154,17 +154,31 @@
         </v-card-title>
         <v-card-text>
           <v-form ref="columnPermissionForm">
+            <!-- Debug info -->
+            <v-alert v-if="availableColumns.length > 0" type="info" density="compact" class="mb-3">
+              Debug: Found {{ availableColumns.length }} columns. First: {{ availableColumns[0] }}
+            </v-alert>
+            
             <v-select
               v-model="columnPermissionForm.column_name"
               :items="availableColumns"
               label="Column"
               :rules="[v => !!v || 'Column is required']"
               :disabled="editingColumnPermission !== null"
-              item-title="text"
-              item-value="value"
               clearable
               variant="outlined"
-              @update:modelValue="(val) => console.log('🔧 Column selected:', val)"></v-select>
+              @update:modelValue="(val) => console.log('🔧 Column selected:', val)"
+              @click="console.log('🔧 Column dropdown clicked')"
+              :menu-props="{ maxHeight: 300 }"></v-select>
+            
+            <!-- Test with hardcoded items -->
+            <v-select
+              v-model="testSelection"
+              :items="['test1', 'test2', 'test3']"
+              label="Test Dropdown (hardcoded)"
+              variant="outlined"
+              class="mt-3"
+              @update:modelValue="(val) => console.log('🔧 Test selected:', val)"></v-select>
             
             <v-select
               v-model="columnPermissionForm.principal_type"
@@ -365,6 +379,9 @@ const columnPermissionForm = ref({
   permission_type: 'read' as 'read' | 'write' | 'owner',
 });
 
+// Test variable for debugging dropdown
+const testSelection = ref('');
+
 const rowPolicyForm = ref({
   policy_name: '',
   principal_type: 'role' as 'user' | 'role' | 'group',
@@ -389,16 +406,20 @@ const availableColumns = computed(() => {
     return [];
   }
   
-  // Convert string array to objects for v-select
+  // For debugging, let's try both approaches
   const columnOptions = rawColumns.map(column => ({
     text: column,
     value: column
   }));
   
-  console.log('🔍 DEBUG - columns after processing:', columnOptions);
+  console.log('🔍 DEBUG - columns after processing (objects):', columnOptions);
+  console.log('🔍 DEBUG - columns raw array:', rawColumns);
   console.log('🔍 DEBUG - sample column object:', columnOptions[0]);
   console.log('🔍 DEBUG - total columns:', columnOptions.length);
-  return columnOptions;
+  
+  // Try returning raw strings first - v-select should handle this
+  console.log('🔍 DEBUG - returning raw strings for v-select');
+  return rawColumns;
 });
 
 // Table headers
